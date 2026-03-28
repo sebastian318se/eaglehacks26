@@ -2,7 +2,6 @@ import keys
 import json
 import anthropic
 from data import getFullData
-from main import get_latest_reading, get_three_reading
 
 SYSTEM_PROMPT = """Analyze the latest surgery room sensor readings (temperature, humidity, door_open, CO2, PM2.5, TVOC, pressure, light).
 Compare against medical standards.
@@ -41,24 +40,22 @@ def evaluateReading(sensorData):
         }
  
  
-if __name__ == "__main__":
+def sendReading(latest_readings):
     
-    latestData = get_three_reading()
+    latestData = latest_readings
 
     averageKeys = ["temperature", "humidity", "co2_ppm", "pm25_ug_m3", "tvoc_ppb", "pressure_pa", "light_lux"]
     keepKeys = ["timestamp", "device_id", "door_open"]
-    # Get average for three latest reading
+
     result = {}
 
-    # average selected keys
+    # Get average selected keys
     for k in averageKeys:
         result[k] = sum(r[k] for r in latestData) / len(latestData)
 
-    # keep selected keys (usually from the latest reading)
+    # Keep selected keys (from the latest reading)
     latest = latestData[-1]
     for k in keepKeys:
-        result[k] += latest[k]
+        result[k] = latest[k]
 
     evaluateReading(result)
-
-
