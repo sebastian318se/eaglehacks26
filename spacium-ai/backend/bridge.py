@@ -4,7 +4,7 @@ import serial
 import requests
 from datetime import datetime
 
-COM_PORT = "COM9"
+COM_PORT = "COM3"
 BAUD_RATE = 115200
 API_URL = "http://127.0.0.1:8000/api/readings"
 DEVICE_ID = "trinkey-sht45-01"
@@ -56,7 +56,7 @@ def main():
 
         payload = {
             "device_id": DEVICE_ID,
-            "temperature": temperature,
+            "temperature_c": temperature,
             "humidity": humidity,
             "timestamp": datetime.now().isoformat()
         }
