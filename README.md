@@ -26,7 +26,7 @@ This project is an **environmental monitoring and analysis tool for surgery room
 
 ## Features
 
-- **Real-time collection** of sensor data (temperature, humidity, etc.)  
+- **Real-time collection** of sensor data (temperature, humidity) + filler data  
 - **Automatic calculation** of environmental scores (0–100)  
 - **Safe thresholds detection** and alert system  
 - **JSON output** for easy integration with back-end systems  
@@ -37,7 +37,7 @@ This project is an **environmental monitoring and analysis tool for surgery room
 
 ## Tech Stack
 
-- **Backend**: Python / FastAPI (or Flask)  
-- **Database**: Supabase (PostgreSQL) for storing sensor readings and AI analysis  
-- **AI Analysis**: Claude (Anthropic) for automated evaluation and recommendations  
-- **Frontend**: Dashboard for visualization (React)  
+- **Backend**: Python / FastAPI  
+- **Database**: Supabase for storing sensor readings and AI analysis  
+- **AI Analysis**: Claude for automated evaluation and recommendations  
+- **Frontend**: React Dashboard for visualization (React)  
