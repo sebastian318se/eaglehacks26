@@ -1,13 +1,13 @@
 import os
 import json
 import anthropic
-# from dotenv import load_dotenv
-import keys
+from dotenv import load_dotenv
+# import keys
 
-# load_dotenv()
+load_dotenv()
 
-# ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
-ANTHROPIC_KEY = keys.aikey
+ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
+# ANTHROPIC_KEY = keys.aikey
 
 SYSTEM_PROMPT = """You are a environment analyst. You will receive averaged sensor readings from a predefined location.
 

@@ -1,0 +1,68 @@
+const environments = [
+  {
+    id: "sterile-storage",
+    name: "Sterile Storage Room",
+    description: "Monitors sterile storage areas to ensure surgical instruments remain uncontaminated and in optimal condition.",
+    icon: "sterile_storage.png",
+    sensors: [
+      { key: "temperature",  label: "Temperature", unit: "°C",    idealRange: "18–25°C",    warnBelow: 18,  warnAbove: 25 },
+      { key: "humidity",     label: "Humidity",    unit: "%",     idealRange: "30–60% RH",  warnBelow: 30,  warnAbove: 60 },
+      { key: "co2_ppm",      label: "CO₂",         unit: "ppm",   idealRange: "<1000 ppm",  warnAbove: 1000 },
+      { key: "pm25_ug_m3",   label: "PM2.5",       unit: "µg/m³", idealRange: "<10 µg/m³",  warnAbove: 10 },
+      { key: "tvoc_ppb",     label: "TVOC",        unit: "ppb",   idealRange: "<200 ppb",   warnAbove: 200 },
+      { key: "light_lux",    label: "Light",       unit: "lux",   idealRange: "<300 lux",   warnAbove: 300 },
+      { key: "pressure_pa",  label: "Pressure",    unit: "Pa",    idealRange: ">8 Pa",      warnBelow: 8 },
+      { key: "door_open",    label: "Door",        unit: "",      idealRange: "Closed",     warnIf: true },
+    ],
+  },
+  {
+    id: "food-storage",
+    name: "Food Storage",
+    description: "Tracks temperature, humidity, and air quality in food storage facilities to prevent spoilage and ensure safety compliance.",
+    icon: "food_storage.png",
+    sensors: [
+      { key: "temperature",    label: "Temperature", unit: "°C",    idealRange: "2–8°C",      warnBelow: 2,   warnAbove: 8 },
+      { key: "humidity",       label: "Humidity",    unit: "%",     idealRange: "50–70% RH",  warnBelow: 50,  warnAbove: 70 },
+      { key: "co2_ppm",        label: "CO₂",         unit: "ppm",   idealRange: "<1000 ppm",  warnAbove: 1000 },
+      { key: "co_ppm",         label: "CO",          unit: "ppm",   idealRange: "<9 ppm",     warnAbove: 9 },
+      { key: "tvoc_ppb",       label: "TVOC",        unit: "ppb",   idealRange: "<200 ppb",   warnAbove: 200 },
+      { key: "pm10_ug_m3",     label: "PM10",        unit: "µg/m³", idealRange: "<20 µg/m³",  warnAbove: 20 },
+      { key: "airflow_rate_ms",label: "Airflow",     unit: "m/s",   idealRange: "0.15–0.5",   warnBelow: 0.15, warnAbove: 0.5 },
+      { key: "door_open",      label: "Door",        unit: "",      idealRange: "Closed",     warnIf: true },
+    ],
+  },
+  {
+    id: "greenhouse",
+    name: "Greenhouse",
+    description: "Monitors temperature, humidity, light, and air quality in greenhouses to ensure optimal plant growth conditions.",
+    icon: "greenhouse.png",
+    sensors: [
+      { key: "temperature",      label: "Temperature", unit: "°C",   idealRange: "18–28°C",    warnBelow: 18,  warnAbove: 28 },
+      { key: "humidity",         label: "Humidity",    unit: "%",    idealRange: "50–80% RH",  warnBelow: 50,  warnAbove: 80 },
+      { key: "co2_ppm",          label: "CO₂",         unit: "ppm",  idealRange: "800–1200 ppm",warnBelow: 800, warnAbove: 1200 },
+      { key: "light_lux",        label: "Light",       unit: "lux",  idealRange: "400–800 lux", warnBelow: 400, warnAbove: 800 },
+      { key: "uv_index",         label: "UV Index",    unit: "",     idealRange: "1–3",         warnBelow: 1,   warnAbove: 3 },
+      { key: "airflow_rate_ms",  label: "Airflow",     unit: "m/s",  idealRange: "0.15–0.5",    warnBelow: 0.15, warnAbove: 0.5 },
+      { key: "tvoc_ppb",         label: "TVOC",        unit: "ppb",  idealRange: "<200 ppb",    warnAbove: 200 },
+      { key: "door_open",        label: "Door",        unit: "",     idealRange: "Closed",      warnIf: true },
+    ],
+  },
+  {
+    id: "biotech-laboratory",
+    name: "BioTech Laboratory",
+    description: "Maintains strict air quality and contamination-free conditions for biological and chemical research environments.",
+    icon: "biotech_lab.png",
+    sensors: [
+      { key: "temperature",  label: "Temperature", unit: "°C",    idealRange: "20–24°C",   warnBelow: 20,  warnAbove: 24 },
+      { key: "humidity",     label: "Humidity",    unit: "%",     idealRange: "30–50% RH", warnBelow: 30,  warnAbove: 50 },
+      { key: "co2_ppm",      label: "CO₂",         unit: "ppm",   idealRange: "<1000 ppm", warnAbove: 1000 },
+      { key: "tvoc_ppb",     label: "TVOC",        unit: "ppb",   idealRange: "<200 ppb",  warnAbove: 200 },
+      { key: "no2_ppb",      label: "NO₂",         unit: "ppb",   idealRange: "<53 ppb",   warnAbove: 53 },
+      { key: "o3_ppb",       label: "O₃",          unit: "ppb",   idealRange: "<50 ppb",   warnAbove: 50 },
+      { key: "pm1_ug_m3",    label: "PM1.0",       unit: "µg/m³", idealRange: "<10 µg/m³", warnAbove: 10 },
+      { key: "pressure_pa",  label: "Pressure",    unit: "Pa",    idealRange: ">8 Pa",     warnBelow: 8 },
+    ],
+  },
+];
+
+export default environments;
