@@ -1,4 +1,6 @@
-export default function ScoreCard({ label, score }) {
+import InfoTooltip from "./InfoTooltip";
+
+export default function ScoreCard({ label, score, info }) {
   const color =
     score === null || score === undefined
       ? "text-gray-500"
@@ -10,7 +12,10 @@ export default function ScoreCard({ label, score }) {
 
   return (
     <div className="bg-gray-900 rounded-2xl p-5">
-      <p className="text-gray-400 text-xs uppercase tracking-widest mb-2">{label}</p>
+      <div className="flex items-center gap-1.5 mb-2">
+        <p className="text-gray-400 text-xs uppercase tracking-widest">{label}</p>
+        {info && <InfoTooltip text={info} />}
+      </div>
       <p className={`text-5xl font-bold ${color}`}>
         {score !== null && score !== undefined ? Math.round(score) : "—"}
       </p>
