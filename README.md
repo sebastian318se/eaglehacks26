@@ -1,17 +1,23 @@
-# eaglehacks26
-## Spacium:  
+#Spacium.AI
+##Project Overview
 
-Se der tempo, fazer interfaces diferentes para cada desafio patrocinado  
+##This project is an environmental monitoring and analysis tool for surgery rooms. It collects sensor data such as temperature, humidity, CO2, PM2.5, TVOC, pressure, light, and then:  
+- Compares readings against medical/surgical standards
+- Calculates sterility, storage, and compliance scores
+- Flags unsafe conditions with alerts
+- Provides actionable recommendations for maintaining safe environmental conditions
+- Outputs results in machine-readable JSON suitable for dashboards, AI analysis, or alerting systems
 
-# Back End
-- Integração com sensor  
-- Database com dados adicionais além do sensor (Co2, oxigenio, etc.)   
-- Add dados fakes e dados sensor
-# Front End
-- Dashboard + AI chat integration -> qualidade do ambiente  
-- Recommendations + Alertas + roundups se der tempo  
-
-# AI
-- Chat conversar com agente relacionado a qualidade do ambiente
-
-# Tarefas
+##Features
+- Real-time collection of sensor data (temp and humidity)
+- Automatic calculation of environmental scores (0–100)
+- Safe thresholds detection and alert system
+- JSON output for easy integration with back-end systems
+- Handles missing or extra sensor fields gracefully
+- Supports multiple readings for trend analysis
+  
+##Tech Stack
+- Backend: Python / FastAPI (or Flask)
+- Database: Supabase (PostgreSQL) for storing sensor readings and AI analysis
+- AI Analysis: Claude (Anthropic) for automated evaluation and recommendations
+- Frontend: Dashboard for visualization (React)
