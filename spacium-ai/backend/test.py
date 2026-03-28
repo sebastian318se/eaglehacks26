@@ -1,7 +1,7 @@
 import serial
 import time
 
-ser = serial.Serial("COM9", 115200, timeout=2)
+ser = serial.Serial("COM3", 115200, timeout=2)
 time.sleep(2)
 
 while True:

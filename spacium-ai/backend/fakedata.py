@@ -43,4 +43,3 @@ def generateReading():
     }
 
     return reading
-print(generateReading())
