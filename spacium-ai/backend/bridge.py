@@ -56,7 +56,7 @@ def main():
 
         payload = {
             "device_id": DEVICE_ID,
-            "temperature_c": temperature,
+            "temperature": temperature,
             "humidity": humidity,
             "timestamp": datetime.now().isoformat()
         }

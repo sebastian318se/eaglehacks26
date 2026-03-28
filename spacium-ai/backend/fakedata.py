@@ -39,7 +39,8 @@ def generateReading():
         "pm25_ug_m3" : odds("pm25_ug_m3"),
         "tvoc_ppb" : odds("tvoc_ppb"),
         "light_lux" : odds("light_lux"),
-        "door_open" : random.choice([True, False])
+        "door_open" : random.choice([True, False]),
+        "pressure_pa" : odds("pressure_pa")
     }
 
     return reading

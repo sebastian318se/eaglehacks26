@@ -1,18 +1,10 @@
-import main
 import fakedata
 
-def getFullData():
-
-    fullData = {}
-
-    sensorData = main.get_latest_reading()
+def getFullData(sensorData):
     fillerData = fakedata.generateReading()
 
-    fullData = {
-        # unpack fake data
+    return {
         **fillerData,
-        "temperature_c": sensorData.get("temperature_c"),
-        "humidity": sensorData.get("humidity")
+        "temperature": sensorData.temperature,
+        "humidity": sensorData.humidity,
     }
-
-    return fullData

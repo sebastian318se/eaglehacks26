@@ -1,7 +1,16 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from data import getFullData
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 readings = []
 
@@ -17,7 +26,8 @@ def root():
 
 @app.post("/api/readings")
 def receive_reading(reading: SensorReading):
-    readings.append(reading)
+    fullReading = getFullData(reading)
+    readings.append(fullReading)
 
     print("Received:", reading)
     return {

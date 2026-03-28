@@ -1,24 +1,27 @@
 import { useState, useEffect } from "react";
 
-const API = "http://localhost:8000";
+const API = "http://127.0.0.1:8000";
 
 export default function useSensorData() {
-  const [latest, setLatest] = useState(null);
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    async function fetchLatest() {
+    async function fetchHistory() {
       try {
-        const res = await fetch(`${API}/api/latest`);
-        if (res.ok) setLatest(await res.json());
+        const res = await fetch(`${API}/api/readings`);
+        if (res.ok) setHistory(await res.json());
       } catch {
         // backend not reachable yet
       }
     }
 
-    fetchLatest();
-    const interval = setInterval(fetchLatest, 5000);
+    fetchHistory();
+    const interval = setInterval(fetchHistory, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  return { latest };
+
+  const latest = history.length > 0 ? history[history.length - 1] : null;
+
+  return { history, latest };
 }
