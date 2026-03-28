@@ -53,6 +53,13 @@ def get_latest_reading():
         return {"status": "error", "message": "No readings available"}
     return readings[-1]
 
+@app.get("/api/reading/three_latest")
+def get_three_reading():
+    if not readings:
+        return {"status": "error", "message": "No readings available"}
+    return readings[-3:]
+
+
 @app.get("/api/readings")
 def get_all_readings():
     return readings
