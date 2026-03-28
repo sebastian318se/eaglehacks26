@@ -9,6 +9,7 @@ export default function useSensorData() {
     async function fetchHistory() {
       try {
         const res = await fetch(`${API}/api/readings`);
+        
         if (res.ok) setHistory(await res.json());
       } catch {
         // backend not reachable yet
@@ -22,6 +23,7 @@ export default function useSensorData() {
 
 
   const latest = history.length > 0 ? history[history.length - 1] : null;
+  alert(JSON.stringify(latest));
 
   return { history, latest };
 }

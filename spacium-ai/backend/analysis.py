@@ -1,7 +1,9 @@
-import keys
+import os
 import json
 import anthropic
-from data import getFullData
+
+ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
+
 
 SYSTEM_PROMPT = """Analyze the latest surgery room sensor readings (temperature, humidity, door_open, CO2, PM2.5, TVOC, pressure, light).
 Compare against medical standards.
@@ -11,10 +13,10 @@ Only return valid JSON."""
 
 def evaluateReading(sensorData):
     # Build full data dict
-    data_dict = getFullData(sensorData)
+    data_dict = sensorData
  
     client = anthropic.Anthropic(
-        api_key = keys.aikey
+        api_key = ANTHROPIC_KEY
     )
  
     response = client.messages.create(
@@ -45,7 +47,7 @@ def sendReading(latest_readings):
     latestData = latest_readings
 
     averageKeys = ["temperature", "humidity", "co2_ppm", "pm25_ug_m3", "tvoc_ppb", "pressure_pa", "light_lux"]
-    keepKeys = ["timestamp", "device_id", "door_open"]
+    keepKeys = ["timestamp", "door_open"]
 
     result = {}
 
@@ -58,4 +60,4 @@ def sendReading(latest_readings):
     for k in keepKeys:
         result[k] = latest[k]
 
-    evaluateReading(result)
+    return evaluateReading(result)

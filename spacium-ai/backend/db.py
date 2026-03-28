@@ -1,10 +1,12 @@
 import os
 from supabase import create_client
-import keys
+from dotenv import load_dotenv
 
-SUPABASE_URL = keys.url
-SUPABASE_KEY = keys.key
-ANTHROPIC_KEY = keys.aikey
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
+ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 

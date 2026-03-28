@@ -16,7 +16,7 @@ export default function InfoTooltip({ text }) {
     <div ref={ref} className="relative inline-flex">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="text-gray-500 hover:text-gray-300 transition-colors leading-none"
+        className="text-slate-400 hover:text-slate-600 transition-colors leading-none"
         aria-label="More info"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -24,9 +24,9 @@ export default function InfoTooltip({ text }) {
         </svg>
       </button>
       {open && (
-        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 bg-gray-800 border border-gray-700 text-gray-300 text-xs rounded-xl p-3 shadow-xl">
+        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-800 text-slate-200 text-xs rounded-xl p-3 shadow-xl leading-relaxed">
           {text}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800" />
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
         </div>
       )}
     </div>

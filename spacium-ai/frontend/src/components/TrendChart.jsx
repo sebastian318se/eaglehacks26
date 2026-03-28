@@ -9,7 +9,7 @@ const CHART_INFO = "Shows how the three scores have changed across the last 3 re
 export default function TrendChart({ history }) {
   if (!history || history.length === 0) {
     return (
-      <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm">
+      <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
         Waiting for data…
       </div>
     );
@@ -24,24 +24,24 @@ export default function TrendChart({ history }) {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="flex items-center gap-1.5 mb-2">
-        <p className="text-gray-400 text-xs uppercase tracking-widest">Score Trends</p>
+      <div className="flex items-center gap-1.5 mb-4">
+        <p className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Score Trends</p>
         <InfoTooltip text={CHART_INFO} />
       </div>
       <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
             <XAxis dataKey="t" hide />
-            <YAxis domain={["auto", "auto"]} tick={{ fill: "#6b7280", fontSize: 11 }} />
+            <YAxis domain={["auto", "auto"]} tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip
-              contentStyle={{ backgroundColor: "#111827", border: "none", borderRadius: "8px" }}
+              contentStyle={{ backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
               labelStyle={{ display: "none" }}
-              itemStyle={{ color: "#e5e7eb", fontSize: 12 }}
+              itemStyle={{ color: "#475569", fontSize: 12 }}
             />
-            <Legend wrapperStyle={{ fontSize: 12, color: "#9ca3af" }} />
-            <Line type="monotone" dataKey="Sterility"          stroke="#34d399" strokeWidth={2} dot={true} />
-            <Line type="monotone" dataKey="Storage Conditions" stroke="#fbbf24" strokeWidth={2} dot={true} />
-            <Line type="monotone" dataKey="Compliance"         stroke="#60a5fa" strokeWidth={2} dot={true} />
+            <Legend wrapperStyle={{ fontSize: 12, color: "#64748b" }} />
+            <Line type="monotone" dataKey="Sterility"          stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} />
+            <Line type="monotone" dataKey="Storage Conditions" stroke="#f59e0b" strokeWidth={2} dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} />
+            <Line type="monotone" dataKey="Compliance"         stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6", r: 4 }} activeDot={{ r: 6 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>

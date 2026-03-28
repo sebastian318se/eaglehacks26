@@ -1,3 +1,5 @@
+import json
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -38,8 +40,11 @@ def receive_reading(reading: SensorReading):
         batch = pending_db_reads[:3]
 
         readingEval = sendReading(batch)
-        print(readingEval)
-        
+        print(f"Claude evaluation: {readingEval}")
+
+        for r in batch:
+            r.update(readingEval)
+
         insert_readings(batch)
         del pending_db_reads[:3]
         inserted_count = len(batch)
