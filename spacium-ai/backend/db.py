@@ -10,6 +10,13 @@ ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+def insert_readings(readings):
+    response = supabase.table("environment_readings") \
+        .insert(readings) \
+        .execute()
+
+    return response.data
+
 def get_reading():
     data = supabase.table("environment_readings") \
         .select("*") \
