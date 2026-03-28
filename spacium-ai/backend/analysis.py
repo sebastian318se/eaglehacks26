@@ -8,9 +8,9 @@ load_dotenv()
 ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 
-SYSTEM_PROMPT = """You are a medical storage environment analyst. You will receive averaged sensor readings from a surgical instrument storage room.
+SYSTEM_PROMPT = """You are an environment analyst. You will receive averaged sensor readings from a room that will be picked by the user.
 
-Evaluate the readings against medical storage standards and return ONLY a valid JSON object with exactly this structure, no extra text:
+Evaluate the readings against the standards of this specific environment chosen by the user and return ONLY a valid JSON object with exactly this structure, no extra text:
 
 {
   "sterility_score": <integer 0-100>,
@@ -29,7 +29,7 @@ Scoring guide:
 Return only the JSON. No markdown, no explanation."""
  
 
-def evaluateReading(sensorData):
+def evaluateReading(sensorData, environment_type):
     # Build full data dict
     data_dict = sensorData
  
@@ -68,7 +68,7 @@ def evaluateReading(sensorData):
         }
  
  
-def sendReading(latest_readings):
+def sendReading(latest_readings, environment_type):
     averageKeys = ["temperature", "humidity", "co2_ppm", "pm25_ug_m3", "tvoc_ppb", "pressure_pa", "light_lux"]
 
     sensor_data = {}
@@ -76,7 +76,7 @@ def sendReading(latest_readings):
         sensor_data[k] = round(sum(r[k] for r in latest_readings) / len(latest_readings), 2)
     sensor_data["door_open"] = latest_readings[-1]["door_open"]
 
-    ai_result = evaluateReading(sensor_data)
+    ai_result = evaluateReading(sensor_data, environment_type)
 
     # Convert recommendations list to a single string if needed
     if isinstance(ai_result.get("recommendations"), list):
@@ -85,3 +85,7 @@ def sendReading(latest_readings):
         ai_result["recommendation"] = ai_result.pop("recommendations")
 
     return sensor_data, ai_result
+
+
+
+

@@ -27,8 +27,8 @@ def root():
     return {"message": "Welcome to the Spacium AI API"}
 
 @app.post("/api/readings")
-def receive_reading(reading: SensorReading):
-    fullReading = getFullData(reading)
+def receive_reading(reading: SensorReading, environmental_type: str):
+    fullReading = getFullData(reading, environmental_type)
     pending.append(fullReading)
 
     if len(pending) >= 3:
