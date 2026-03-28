@@ -35,9 +35,9 @@ export default function App() {
 
         {/* Score Cards */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <ScoreCard label="Sterility"          score={latest?.air_quality_score} info="Composite score (0–100) based on CO₂, PM2.5, and TVOC levels. Reflects the risk of airborne contamination for stored surgical items." />
-          <ScoreCard label="Storage Conditions" score={latest?.comfort_score}     info="Composite score (0–100) based on temperature and humidity. Surgical items require 18–25°C and 30–60% RH to preserve sterility and prevent corrosion." />
-          <ScoreCard label="Compliance"         score={latest?.focus_score}       info="Composite score (0–100) combining all environmental factors. Indicates whether the storage room meets recommended standards for surgical item preservation." />
+          <ScoreCard label="Sterility"          score={latest?.sterility_score} info="Composite score (0–100) based on CO₂, PM2.5, and TVOC levels. Reflects the risk of airborne contamination for stored surgical items." />
+          <ScoreCard label="Storage Conditions" score={latest?.storage_score}     info="Composite score (0–100) based on temperature and humidity. Surgical items require 18–25°C and 30–60% RH to preserve sterility and prevent corrosion." />
+          <ScoreCard label="Compliance"         score={latest?.compliance_score}       info="Composite score (0–100) combining all environmental factors. Indicates whether the storage room meets recommended standards for surgical item preservation." />
         </section>
 
         {/* Sensor Tiles */}
@@ -58,7 +58,7 @@ export default function App() {
             <TrendChart history={history} />
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm h-72 overflow-y-auto">
-            <AISummary history={history} />
+            <AISummary latest={latest} />
           </div>
         </div>
 

@@ -1,14 +1,32 @@
 import os
 import json
 import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
 
 ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 
-SYSTEM_PROMPT = """Analyze the latest surgery room sensor readings (temperature, humidity, door_open, CO2, PM2.5, TVOC, pressure, light).
-Compare against medical standards.
-Return JSON with sterility_score, storage_score, compliance_score (0-100), alert (true if any parameter unsafe), and recommendations (list).
-Only return valid JSON."""
+SYSTEM_PROMPT = """You are a medical storage environment analyst. You will receive averaged sensor readings from a surgical instrument storage room.
+
+Evaluate the readings against medical storage standards and return ONLY a valid JSON object with exactly this structure, no extra text:
+
+{
+  "sterility_score": <integer 0-100>,
+  "storage_score": <integer 0-100>,
+  "compliance_score": <integer 0-100>,
+  "alert": <true or false>,
+  "recommendation": "<single string with your recommendation>"
+}
+
+Scoring guide:
+- sterility_score: based on CO2, PM2.5, TVOC. Penalize high CO2 (>1000ppm), high PM2.5 (>10), high TVOC (>200ppb).
+- storage_score: based on temperature (ideal 18-25C) and humidity (ideal 30-60%). Penalize values outside range.
+- compliance_score: overall compliance. Set alert to true if any parameter is outside safe range or door is open.
+- recommendation: one concise sentence describing the most important action to take.
+
+Return only the JSON. No markdown, no explanation."""
  
 
 def evaluateReading(sensorData):
@@ -20,8 +38,8 @@ def evaluateReading(sensorData):
     )
  
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=300,
+        model="claude-haiku-4-5-20251001",
+        max_tokens=400,
         system=SYSTEM_PROMPT,
         messages=[
             {
@@ -30,12 +48,20 @@ def evaluateReading(sensorData):
             }
         ]
     )
- 
-    output_text = response.content[0].text
- 
+
+    output_text = response.content[0].text.strip()
+
+    # Strip markdown fences if present
+    if output_text.startswith("```"):
+        output_text = output_text.split("```")[1]
+        if output_text.startswith("json"):
+            output_text = output_text[4:]
+        output_text = output_text.strip()
+
     try:
         return json.loads(output_text)
     except json.JSONDecodeError:
+        print("Raw Claude response:", output_text)
         return {
             "error": "Invalid JSON returned by Claude",
             "raw_response": output_text
@@ -43,21 +69,19 @@ def evaluateReading(sensorData):
  
  
 def sendReading(latest_readings):
-    
-    latestData = latest_readings
-
     averageKeys = ["temperature", "humidity", "co2_ppm", "pm25_ug_m3", "tvoc_ppb", "pressure_pa", "light_lux"]
-    keepKeys = ["timestamp", "door_open"]
 
-    result = {}
-
-    # Get average selected keys
+    sensor_data = {}
     for k in averageKeys:
-        result[k] = sum(r[k] for r in latestData) / len(latestData)
+        sensor_data[k] = round(sum(r[k] for r in latest_readings) / len(latest_readings), 2)
+    sensor_data["door_open"] = latest_readings[-1]["door_open"]
 
-    # Keep selected keys (from the latest reading)
-    latest = latestData[-1]
-    for k in keepKeys:
-        result[k] = latest[k]
+    ai_result = evaluateReading(sensor_data)
 
-    return evaluateReading(result)
+    # Convert recommendations list to a single string if needed
+    if isinstance(ai_result.get("recommendations"), list):
+        ai_result["recommendation"] = " | ".join(ai_result.pop("recommendations"))
+    elif "recommendations" in ai_result:
+        ai_result["recommendation"] = ai_result.pop("recommendations")
+
+    return sensor_data, ai_result

@@ -8,8 +8,7 @@ export default function useSensorData() {
   useEffect(() => {
     async function fetchHistory() {
       try {
-        const res = await fetch(`${API}/api/readings`);
-        
+        const res = await fetch(`${API}/api/history?limit=3`);
         if (res.ok) setHistory(await res.json());
       } catch {
         // backend not reachable yet
@@ -21,9 +20,7 @@ export default function useSensorData() {
     return () => clearInterval(interval);
   }, []);
 
-
   const latest = history.length > 0 ? history[history.length - 1] : null;
-  alert(JSON.stringify(latest));
 
   return { history, latest };
 }

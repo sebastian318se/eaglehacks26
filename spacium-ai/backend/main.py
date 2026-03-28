@@ -1,11 +1,9 @@
-import json
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from data import getFullData
-from db import insert_readings
-from analysis import evaluateReading, sendReading
+from db import insert_reading, get_latest_readings
+from analysis import sendReading
 
 app = FastAPI()
 
@@ -16,8 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-readings = []
-pending_db_reads = []
+pending = []
 
 class SensorReading(BaseModel):
     device_id: str
@@ -32,37 +29,19 @@ def root():
 @app.post("/api/readings")
 def receive_reading(reading: SensorReading):
     fullReading = getFullData(reading)
-    readings.append(fullReading)
-    pending_db_reads.append(fullReading)
+    pending.append(fullReading)
 
-    inserted_count = 0
-    if len(pending_db_reads) >= 3:
-        batch = pending_db_reads[:3]
+    if len(pending) >= 3:
+        batch = pending[:3]
+        del pending[:3]
 
-        readingEval = sendReading(batch)
-        print(f"Claude evaluation: {readingEval}")
+        sensor_data, ai_scores = sendReading(batch)
+        print(f"Claude evaluation: {ai_scores}")
 
-        for r in batch:
-            r.update(readingEval)
+        insert_reading(sensor_data, ai_scores)
 
-        insert_readings(batch)
-        del pending_db_reads[:3]
-        inserted_count = len(batch)
+    return {"status": "ok", "buffered": len(pending)}
 
-    print("Received:", reading)
-    return {
-        "status": "ok",
-        "message": "Data received",
-        "buffered_for_db": len(pending_db_reads),
-        "inserted_count": inserted_count,
-    }
-
-@app.get("/api/readings/latest")
-def get_latest_reading():
-    if not readings:
-        return {"status": "error", "message": "No readings available"}
-    return readings[-1]
-
-@app.get("/api/readings")
-def get_all_readings():
-    return readings
+@app.get("/api/history")
+def get_history(limit: int = 3):
+    return get_latest_readings(limit)
