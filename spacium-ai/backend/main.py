@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from data import getFullData
+from db import insert_readings
 
 app = FastAPI()
 
@@ -13,6 +14,7 @@ app.add_middleware(
 )
 
 readings = []
+pending_db_reads = []
 
 class SensorReading(BaseModel):
     device_id: str
@@ -28,11 +30,21 @@ def root():
 def receive_reading(reading: SensorReading):
     fullReading = getFullData(reading)
     readings.append(fullReading)
+    pending_db_reads.append(fullReading)
+
+    inserted_count = 0
+    if len(pending_db_reads) >= 3:
+        batch = pending_db_reads[:3]
+        insert_readings(batch)
+        del pending_db_reads[:3]
+        inserted_count = len(batch)
 
     print("Received:", reading)
     return {
         "status": "ok",
-        "message": "Data received"
+        "message": "Data received",
+        "buffered_for_db": len(pending_db_reads),
+        "inserted_count": inserted_count,
     }
 
 @app.get("/api/readings/latest")
