@@ -15,6 +15,7 @@ app.add_middleware(
 )
 
 pending = []
+current_environment = "sterile-storage"
 
 class SensorReading(BaseModel):
     device_id: str
@@ -22,9 +23,19 @@ class SensorReading(BaseModel):
     humidity: float
     timestamp: str
 
+class EnvironmentUpdate(BaseModel):
+    environment: str
+
 @app.get("/")
 def root():
     return {"message": "Welcome to the Spacium AI API"}
+
+@app.post("/api/environment")
+def set_environment(body: EnvironmentUpdate):
+    global current_environment
+    current_environment = body.environment
+    print(f"Environment set to: {current_environment}")
+    return {"status": "ok", "environment": current_environment}
 
 @app.post("/api/readings")
 def receive_reading(reading: SensorReading, environmental_type: str):
