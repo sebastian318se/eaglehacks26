@@ -1,15 +1,15 @@
 import os
 import json
 import anthropic
-from dotenv import load_dotenv
-# import keys
+# from dotenv import load_dotenv
+import keys
 
-load_dotenv()
+# load_dotenv()
 
-ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
-# ANTHROPIC_KEY = keys.aikey
+# ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
+ANTHROPIC_KEY = keys.aikey
 
-SYSTEM_PROMPT = """You are a medical storage environment analyst. You will receive averaged sensor readings from a surgical instrument storage room.
+SYSTEM_PROMPT = """You are a environment analyst. You will receive averaged sensor readings from a predefined location.
 
 Evaluate the readings against medical storage standards and return ONLY a valid JSON object with exactly this structure, no extra text:
 
@@ -22,7 +22,7 @@ Evaluate the readings against medical storage standards and return ONLY a valid 
 }
 
 Scoring guide:
-- sterility_score: based on CO2, PM2.5, TVOC. Penalize high CO2 (>1000ppm), high PM2.5 (>10), high TVOC (>200ppb).
+- sterility_score: based on relevant parameters from dataset
 - storage_score: based on temperature (ideal 18-25C) and humidity (ideal 30-60%). Penalize values outside range.
 - compliance_score: overall compliance. Set alert to true if any parameter is outside safe range or door is open.
 - recommendation: one concise sentence describing the most important action to take.
