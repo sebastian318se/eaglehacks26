@@ -46,7 +46,10 @@ def evaluateReading(sensorData, environment_type):
         messages=[
             {
                 "role": "user",
-                "content": f"Sensor data:\n{json.dumps(data_dict)}"
+                "content": (
+                    f"Environment type: {environment_type}\n"
+                    f"Sensor data:\n{json.dumps(data_dict)}"
+                )
             }
         ]
     )
@@ -71,12 +74,27 @@ def evaluateReading(sensorData, environment_type):
  
  
 def sendReading(latest_readings, environment_type):
-    averageKeys = ["temperature", "humidity", "co2_ppm", "pm25_ug_m3", "tvoc_ppb", "pressure_pa", "light_lux"]
-
     sensor_data = {}
-    for k in averageKeys:
-        sensor_data[k] = round(sum(r[k] for r in latest_readings) / len(latest_readings), 2)
-    sensor_data["door_open"] = latest_readings[-1]["door_open"]
+    numeric_keys = set()
+
+    for reading in latest_readings:
+        for key, value in reading.items():
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                numeric_keys.add(key)
+
+    for key in sorted(numeric_keys):
+        values = [
+            reading[key]
+            for reading in latest_readings
+            if reading.get(key) is not None and isinstance(reading.get(key), (int, float))
+        ]
+        if values:
+            sensor_data[key] = round(sum(values) / len(values), 2)
+
+    sensor_data["device_id"] = latest_readings[-1].get("device_id")
+    sensor_data["timestamp"] = latest_readings[-1].get("timestamp")
+    sensor_data["environment"] = environment_type
+    sensor_data["door_open"] = any(reading.get("door_open", False) for reading in latest_readings)
 
     ai_result = evaluateReading(sensor_data, environment_type)
 

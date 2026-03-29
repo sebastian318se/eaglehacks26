@@ -4,7 +4,7 @@ import serial
 import requests
 from datetime import datetime
 
-COM_PORT = "COM3"
+COM_PORT = "COM11"
 BAUD_RATE = 115200
 API_URL = "http://127.0.0.1:8000/api/readings"
 DEVICE_ID = "trinkey-sht45-01"
