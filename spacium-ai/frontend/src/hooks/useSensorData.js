@@ -4,8 +4,12 @@ const API = "http://127.0.0.1:8000";
 
 export default function useSensorData(environmentId) {
   const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setHistory([]);
+    setLoading(true);
+
     async function fetchHistory() {
       try {
         const params = new URLSearchParams({ limit: "3" });
@@ -15,10 +19,11 @@ export default function useSensorData(environmentId) {
         if (res.ok) setHistory(await res.json());
       } catch {
         // backend not reachable yet
+      } finally {
+        setLoading(false);
       }
     }
 
-    setHistory([]);
     fetchHistory();
     const interval = setInterval(fetchHistory, 5000);
     return () => clearInterval(interval);
@@ -26,5 +31,5 @@ export default function useSensorData(environmentId) {
 
   const latest = history.length > 0 ? history[history.length - 1] : null;
 
-  return { history, latest };
+  return { history, latest, loading };
 }

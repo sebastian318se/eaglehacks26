@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useSensorData from '../hooks/useSensorData';
 import ScoreCard from '../components/ScoreCard';
@@ -5,7 +6,7 @@ import SensorTile from '../components/SensorTile';
 import TrendChart from '../components/TrendChart';
 import AISummary from '../components/AISummary';
 import environments from '../config/environments';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, TriangleAlert, X } from 'lucide-react';
 
 function getSensorValue(sensor, latest) {
   if (!latest) return null;
@@ -36,7 +37,17 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { environment: environmentId } = useParams();
   const environment = environments.find(e => e.id === environmentId);
-  const { history, latest } = useSensorData(environmentId);
+  const { history, latest, loading } = useSensorData(environmentId);
+
+  const [alertDismissed, setAlertDismissed] = useState(false);
+
+  useEffect(() => {
+    if (latest?.alert) {
+      setAlertDismissed(false);
+    }
+  }, [latest?.timestamp]);
+
+  const showModal = latest?.alert && !alertDismissed;
 
   if (!environment) {
     return (
@@ -52,7 +63,41 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-slate-50">
 
-      {/* Top nav */}
+      
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setAlertDismissed(true)} />
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border border-red-100">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <TriangleAlert size={20} className="text-red-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-slate-900 font-semibold text-base">Environmental Alert</h2>
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                </div>
+                <p className="text-slate-600 text-sm leading-relaxed">{latest.recommendation}</p>
+              </div>
+              <button
+                onClick={() => setAlertDismissed(true)}
+                className="text-slate-400 hover:text-slate-600 transition-colors shrink-0 mt-0.5"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="mt-5 flex justify-end">
+              <button
+                onClick={() => setAlertDismissed(true)}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                Acknowledge
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate("/")} className="text-slate-400 hover:text-slate-600 transition-colors">
@@ -69,12 +114,20 @@ export default function Dashboard() {
         </div>
       </nav>
 
+      {!latest && !loading && (
+        <div className="bg-amber-50 border-b border-amber-200 px-8 py-3 flex items-center gap-3">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+          <p className="text-amber-700 text-sm">
+            Waiting for first batch — the system collects 3 readings before processing. Make sure <strong>bridge.py</strong> is running.
+          </p>
+        </div>
+      )}
+
       <main className="max-w-6xl mx-auto px-8 py-10">
 
-        {/* Page title */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">{environment.name}</h1>
-          <p className="text-slate-500 text-sm mt-1">{environment.description}</p>
+          <h1 className="text-3xl font-bold text-slate-900">{environment.name}</h1>
+          <p className="text-slate-500 text-md mt-1">{environment.description}</p>
         </div>
 
         {/* Score Cards */}
@@ -84,7 +137,6 @@ export default function Dashboard() {
           <ScoreCard label="Compliance"         score={latest?.compliance_score} info="Overall compliance score (0–100) combining all sensor readings against environment standards." />
         </section>
 
-        {/* Sensor Tiles — dynamic from environment config */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           {environment.sensors.map(sensor => (
             <SensorTile
@@ -97,7 +149,6 @@ export default function Dashboard() {
           ))}
         </section>
 
-        {/* Bottom row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm h-72">
             <TrendChart history={history} />

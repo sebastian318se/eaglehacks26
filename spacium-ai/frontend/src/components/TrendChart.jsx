@@ -38,7 +38,7 @@ export default function TrendChart({ history }) {
               labelStyle={{ display: "none" }}
               itemStyle={{ color: "#475569", fontSize: 12 }}
             />
-            <Legend wrapperStyle={{ fontSize: 12, color: "#64748b" }} />
+            <Legend wrapperStyle={{ fontSize: 12, color: "#64748b", margin: -10}} />
             <Line type="monotone" dataKey="Sterility"          stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} />
             <Line type="monotone" dataKey="Storage Conditions" stroke="#f59e0b" strokeWidth={2} dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} />
             <Line type="monotone" dataKey="Compliance"         stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6", r: 4 }} activeDot={{ r: 6 }} />

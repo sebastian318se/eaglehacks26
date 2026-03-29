@@ -33,7 +33,7 @@ export default function EnvironmentSelect() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
 
-      {/* Header */}
+      
       <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center gap-2">
         <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
           <span className="text-white text-xs font-bold">S</span>
@@ -41,7 +41,7 @@ export default function EnvironmentSelect() {
         <span className="text-slate-900 font-bold text-lg">Spacium<span className="text-blue-600">.AI</span></span>
       </nav>
 
-      {/* Content */}
+      
       <div className="flex-1 flex flex-col items-center justify-center px-8 py-16">
         <div className="max-w-2xl w-full">
 
