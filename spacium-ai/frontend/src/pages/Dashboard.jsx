@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useSensorData from '../hooks/useSensorData';
 import ScoreCard from '../components/ScoreCard';
@@ -6,24 +5,59 @@ import SensorTile from '../components/SensorTile';
 import TrendChart from '../components/TrendChart';
 import AISummary from '../components/AISummary';
 import environments from '../config/environments';
+import { ArrowLeft } from 'lucide-react';
 
+function getSensorValue(sensor, latest) {
+  if (!latest) return null;
+  const raw = latest[sensor.key];
+  if (raw === null || raw === undefined) return null;
+
+  if (sensor.key === "temperature") {
+    const f = ((raw * 9) / 5 + 32).toFixed(1);
+    return `${raw}°C / ${f}°F`;
+  }
+  if (sensor.key === "door_open") return raw ? "Open" : "Closed";
+  if (sensor.key === "occupancy") return `${Math.round(raw)} people`;
+  return `${raw}${sensor.unit ? " " + sensor.unit : ""}`;
+}
+
+function getSensorWarn(sensor, latest) {
+  if (!latest) return false;
+  const raw = latest[sensor.key];
+  if (raw === null || raw === undefined) return false;
+
+  if ("warnIf" in sensor) return raw === sensor.warnIf;
+  const above = sensor.warnAbove !== undefined && raw > sensor.warnAbove;
+  const below = sensor.warnBelow !== undefined && raw < sensor.warnBelow;
+  return above || below;
+}
 
 export default function Dashboard() {
-    const environmentId = useParams();
+  const navigate = useNavigate();
+  const { environment: environmentId } = useParams();
+  const environment = environments.find(e => e.id === environmentId);
+  const { history, latest } = useSensorData();
 
-    const environment = environments.find(env => env.id === environmentId)?.name || "Unknown Environment";
-
-
-
-    const { history, latest } = useSensorData();
-    const temperature_f = latest ? (latest.temperature * 9/5 + 32).toFixed(1) : null;
+  if (!environment) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-slate-500 mb-4">Unknown environment.</p>
+          <button onClick={() => navigate("/")} className="text-blue-600 text-sm underline">Go back</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
 
       {/* Top nav */}
       <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate("/")} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <ArrowLeft size={18} />
+          </button>
           <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
             <span className="text-white text-xs font-bold">S</span>
           </div>
@@ -39,27 +73,28 @@ export default function Dashboard() {
 
         {/* Page title */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">Surgical Storage Monitor</h1>
-          <p className="text-slate-500 text-sm mt-1">Real-time environmental conditions for sterile instrument storage</p>
+          <h1 className="text-2xl font-bold text-slate-900">{environment.name}</h1>
+          <p className="text-slate-500 text-sm mt-1">{environment.description}</p>
         </div>
 
         {/* Score Cards */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <ScoreCard label="Sterility"          score={latest?.sterility_score} info="Composite score (0–100) based on CO₂, PM2.5, and TVOC levels. Reflects the risk of airborne contamination for stored surgical items." />
-          <ScoreCard label="Storage Conditions" score={latest?.storage_score}     info="Composite score (0–100) based on temperature and humidity. Surgical items require 18–25°C and 30–60% RH to preserve sterility and prevent corrosion." />
-          <ScoreCard label="Compliance"         score={latest?.compliance_score}       info="Composite score (0–100) combining all environmental factors. Indicates whether the storage room meets recommended standards for surgical item preservation." />
+          <ScoreCard label="Sterility"          score={latest?.sterility_score}  info="Composite score (0–100) reflecting contamination risk based on air quality sensors." />
+          <ScoreCard label="Storage Conditions" score={latest?.storage_score}    info="Composite score (0–100) based on temperature and humidity levels for this environment." />
+          <ScoreCard label="Compliance"         score={latest?.compliance_score} info="Overall compliance score (0–100) combining all sensor readings against environment standards." />
         </section>
 
-        {/* Sensor Tiles */}
+        {/* Sensor Tiles — dynamic from environment config */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <SensorTile label="Temperature"  value={latest ? `${latest.temperature}°C / ${temperature_f}°F` : null} warn={latest?.temperature < 18 || latest?.temperature > 25} info="Ideal range: 18–25°C. Temperatures outside this range can degrade packaging, adhesives, and sterile barriers of surgical instruments." />
-          <SensorTile label="Humidity"     value={latest ? `${latest.humidity}%` : null}                          warn={latest?.humidity < 30 || latest?.humidity > 60}        info="Ideal range: 30–60% RH. High humidity promotes microbial growth and corrosion. Low humidity causes static buildup and packaging brittleness." />
-          <SensorTile label="PM2.5"        value={latest ? `${latest.pm25_ug_m3} µg/m³` : null}                  warn={latest?.pm25_ug_m3 > 10}                               info="Fine particulate matter (≤2.5µm). Warn threshold: >10 µg/m³. Particles can settle on sterile packaging and compromise instrument integrity." />
-          <SensorTile label="TVOC"         value={latest ? `${latest.tvoc_ppb} ppb` : null}                      warn={latest?.tvoc_ppb > 200}                                info="Total Volatile Organic Compounds. Warn threshold: >200 ppb. Elevated VOCs may indicate chemical off-gassing that can react with sterile materials." />
-          <SensorTile label="CO₂"          value={latest ? `${latest.co2_ppm} ppm` : null}                       warn={latest?.co2_ppm > 1000}                                info="Carbon dioxide concentration. Warn threshold: >1000 ppm. High CO₂ signals poor ventilation, increasing the risk of airborne contamination." />
-          <SensorTile label="Light"        value={latest ? `${latest.light_lux} lux` : null}                     warn={latest?.light_lux > 300}                               info="Illuminance level. Warn threshold: >300 lux. Prolonged light exposure, especially UV, can degrade plastics, rubber components, and sterile packaging." />
-          <SensorTile label="Pressure"     value={latest ? `+${latest.pressure_pa} Pa` : null}                   warn={latest?.pressure_pa < 8}                               info="Differential air pressure relative to adjacent areas. Warn threshold: <8 Pa. Positive pressure prevents unfiltered air and contaminants from entering the storage room." />
-          <SensorTile label="Door"         value={latest ? (latest.door_open ? "Open" : "Closed") : null}        warn={latest?.door_open}                                     info="Storage room door status. An open door breaks the positive pressure barrier, allowing uncontrolled airflow and potential contamination of stored items." />
+          {environment.sensors.map(sensor => (
+            <SensorTile
+              key={sensor.key}
+              label={sensor.label}
+              value={getSensorValue(sensor, latest)}
+              warn={getSensorWarn(sensor, latest)}
+              info={`Ideal range: ${sensor.idealRange}`}
+            />
+          ))}
         </section>
 
         {/* Bottom row */}
@@ -74,5 +109,5 @@ export default function Dashboard() {
 
       </main>
     </div>
-    );
+  );
 }
