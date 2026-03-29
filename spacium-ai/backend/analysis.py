@@ -9,9 +9,10 @@ load_dotenv()
 ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
 # ANTHROPIC_KEY = keys.aikey
 
-SYSTEM_PROMPT = """You are a environment analyst. You will receive averaged sensor readings from a predefined location.
 
-Evaluate the readings against medical storage standards and return ONLY a valid JSON object with exactly this structure, no extra text:
+SYSTEM_PROMPT = """You are an environment analyst. You will receive averaged sensor readings from a room that will be picked by the user.
+
+Evaluate the readings against the standards of this specific environment chosen by the user and return ONLY a valid JSON object with exactly this structure, no extra text:
 
 {
   "sterility_score": <integer 0-100>,
@@ -30,7 +31,7 @@ Scoring guide:
 Return only the JSON. No markdown, no explanation."""
  
 
-def evaluateReading(sensorData):
+def evaluateReading(sensorData, environment_type):
     # Build full data dict
     data_dict = sensorData
  
@@ -45,7 +46,10 @@ def evaluateReading(sensorData):
         messages=[
             {
                 "role": "user",
-                "content": f"Sensor data:\n{json.dumps(data_dict)}"
+                "content": (
+                    f"Environment type: {environment_type}\n"
+                    f"Sensor data:\n{json.dumps(data_dict)}"
+                )
             }
         ]
     )
@@ -69,15 +73,30 @@ def evaluateReading(sensorData):
         }
  
  
-def sendReading(latest_readings):
-    averageKeys = ["temperature", "humidity", "co2_ppm", "pm25_ug_m3", "tvoc_ppb", "pressure_pa", "light_lux"]
-
+def sendReading(latest_readings, environment_type):
     sensor_data = {}
-    for k in averageKeys:
-        sensor_data[k] = round(sum(r[k] for r in latest_readings) / len(latest_readings), 2)
-    sensor_data["door_open"] = latest_readings[-1]["door_open"]
+    numeric_keys = set()
 
-    ai_result = evaluateReading(sensor_data)
+    for reading in latest_readings:
+        for key, value in reading.items():
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                numeric_keys.add(key)
+
+    for key in sorted(numeric_keys):
+        values = [
+            reading[key]
+            for reading in latest_readings
+            if reading.get(key) is not None and isinstance(reading.get(key), (int, float))
+        ]
+        if values:
+            sensor_data[key] = round(sum(values) / len(values), 2)
+
+    sensor_data["device_id"] = latest_readings[-1].get("device_id")
+    sensor_data["timestamp"] = latest_readings[-1].get("timestamp")
+    sensor_data["environment"] = environment_type
+    sensor_data["door_open"] = any(reading.get("door_open", False) for reading in latest_readings)
+
+    ai_result = evaluateReading(sensor_data, environment_type)
 
     # Convert recommendations list to a single string if needed
     if isinstance(ai_result.get("recommendations"), list):
@@ -86,3 +105,7 @@ def sendReading(latest_readings):
         ai_result["recommendation"] = ai_result.pop("recommendations")
 
     return sensor_data, ai_result
+
+
+
+

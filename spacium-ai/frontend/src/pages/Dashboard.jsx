@@ -36,7 +36,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { environment: environmentId } = useParams();
   const environment = environments.find(e => e.id === environmentId);
-  const { history, latest } = useSensorData();
+  const { history, latest } = useSensorData(environmentId);
 
   if (!environment) {
     return (
