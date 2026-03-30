@@ -14,7 +14,7 @@
 ```                                  
 ## Project Overview
 
-This project is an **environmental monitoring and analysis tool for surgery rooms**. It collects sensor data such as temperature, humidity, CO2, PM2.5, TVOC, pressure, and light, then:  
+This project is an **environmental monitoring and analysis tool for sensitive ambients**. It collects sensor data such as temperature, humidity, CO2, PM2.5, TVOC, pressure, and light, then:  
 
 - Compares readings against medical/surgical standards  
 - Calculates **sterility**, **storage**, and **compliance** scores  
