@@ -16,7 +16,7 @@
 
 This project is an **environmental monitoring and analysis tool for sensitive ambients**. It collects sensor data such as temperature, humidity, CO2, PM2.5, TVOC, pressure, and light, then:  
 
-- Compares readings against medical/surgical standards  
+- Compares readings against field standards  
 - Calculates **sterility**, **storage**, and **compliance** scores  
 - Flags unsafe conditions with **alerts**  
 - Provides **actionable recommendations** for maintaining safe environmental conditions  
@@ -40,4 +40,12 @@ This project is an **environmental monitoring and analysis tool for sensitive am
 - **Backend**: Python / FastAPI  
 - **Database**: Supabase for storing sensor readings and AI analysis  
 - **AI Analysis**: Claude for automated evaluation and recommendations  
-- **Frontend**: React Dashboard for visualization (React)  
+- **Frontend**: React Dashboard for visualization (React)
+
+---
+
+## Screenshots
+![WhatsApp Image 2026-03-28 at 22 35 29](https://github.com/user-attachments/assets/a8949739-cfde-43b2-8b89-33f85b791410)
+![WhatsApp Image 2026-03-28 at 22 35 15](https://github.com/user-attachments/assets/4bd791bd-1bbf-4e3a-bc86-c1debe98393c)
+
+
